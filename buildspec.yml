@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+    commands:
+      - echo Installing dependencies...
+      - sudo apt-get update
+      - sudo apt-get install -y maven
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin <your_ecr_repository_url>
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Compiling the Java code...
+      - mvn clean install
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - target/my-app.jar
+  discard-paths: yes
